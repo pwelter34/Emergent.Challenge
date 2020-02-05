@@ -1,0 +1,82 @@
+﻿@page "/"
+@using Emergent.Challenge.Core.Commands
+@using Emergent.Challenge.Core.Models
+@using MediatR
+
+@inject IMediator Mediator
+
+<div class="container">
+    <div class="card mb-5">
+        <div class="card-header">
+            <EditForm Model="Command" OnValidSubmit="@HandleSearch">
+                <DataAnnotationsValidator />
+                <div class="row">
+                    <div class="col-sm-4">
+                        <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i> Software Search
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm mr-2">
+                            <InputText id="Version Number"
+                                       name="Version Number"
+                                       @bind-Value="Command.Version"
+                                       class="form-control"
+                                       placeholder="Version Number" />
+                            <ValidationMessage For="@(() => Command.Version)" />
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Results.Count > 0)
+                    {
+                        foreach (var result in Results)
+                        {
+                            <tr>
+                                <td>@result.Name</td>
+                                <td>@result.Version</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">
+                                No Data Found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+@code
+{
+    public SearchVersionCommand Command { get; set; } = new SearchVersionCommand();
+
+    public List<Software> Results { get; set; } = new List<Software>();
+
+    private async Task HandleSearch()
+    {
+        var results = await Mediator.Send(Command);
+
+        Results = results.ToList();
+    }
+}

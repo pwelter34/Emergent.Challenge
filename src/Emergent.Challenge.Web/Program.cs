@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Emergent.Challenge.Core;
-using Microsoft.AspNetCore.Blazor.Hosting;
-
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 namespace Emergent.Challenge.Web
 {
     public class Program
@@ -9,9 +9,11 @@ namespace Emergent.Challenge.Web
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddChallengeServices();
             builder.RootComponents.Add<App>("app");
 
+			builder.Services.AddChallengeServices();
+            builder.Services.AddBaseAddressHttpClient();		
+			
             await builder.Build().RunAsync();
         }
     }
